@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Adopt Me Trade Calculator</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+body{
+  font-family:'Poppins',sans-serif;
+  background:#f7f7f7;
+  text-align:center;
+}
+
+h2{
+  margin-top:20px;
+}
+
+.container{
+  display:flex;
+  justify-content:center;
+  gap:30px;
+  margin-top:20px;
+}
+
+.side{
+  background:white;
+  padding:20px;
+  border-radius:15px;
+  width:320px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+
+.pet{
+  margin:10px 0;
+}
+
+select,input{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  margin-top:5px;
+}
+
+button{
+  margin-top:15px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#4CAF50;
+  color:white;
+  cursor:pointer;
+}
+
+.result{
+  margin-top:20px;
+  font-size:22px;
+  font-weight:600;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Adopt Me Trade Calculator</h2>
+
+<div class="container">
+
+<div class="side">
+<h3>You Offer</h3>
+<input placeholder="Search..." oninput="search(this)">
+<div id="my"></div>
+<button onclick="add('my')">+ Add Pet</button>
+</div>
+
+<div class="side">
+<h3>You Receive</h3>
+<input placeholder="Search..." oninput="search(this)">
+<div id="their"></div>
+<button onclick="add('their')">+ Add Pet</button>
+</div>
+
+</div>
+
+<button onclick="calc()">Check Trade</button>
+<div id="result" class="result"></div>
+
+<script>
+
+// 🔥 FETCH ВСЕХ ПИТОМЦЕВ
+let pets=[];
+
+fetch("https://adoptme.fandom.com/api.php?action=query&list=categorymembers&cmtitle=Category:Pets&cmlimit=500&format=json&origin=*")
+.then(r=>r.json())
+.then(data=>{
+  pets=data.query.categorymembers.map(p=>p.title);
+});
+
+// характеристики
+const stats=[
+"No Potion",
+"R","F","FR",
+"N","NR","NF","NFR",
+"M","MR","MF","MFR"
+];
+
+// добавить
+function add(side){
+  let html=`
+  <div class="pet">
+    <select>${pets.map(p=>`<option>${p}</option>`).join("")}</select>
+    <select>${stats.map(s=>`<option>${s}</option>`).join("")}</select>
+  </div>`;
+  document.getElementById(side).innerHTML+=html;
+}
+
+// поиск
+function search(input){
+  let text=input.value.toLowerCase();
+
+  document.querySelectorAll("select").forEach(s=>{
+    for(let o of s.options){
+      o.style.display=o.value.toLowerCase().includes(text)?"":"none";
+    }
+  });
+}
+
+// пока базовый результат
+function calc(){
+  document.getElementById("result").innerHTML="✔ Ready (add values next)";
+}
+
+</script>
+
+</body>
+</html>
